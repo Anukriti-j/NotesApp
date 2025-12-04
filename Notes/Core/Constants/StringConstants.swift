@@ -9,5 +9,6 @@ enum StringConstants: String {
     case alertTitle = "Message"
     case settings = "Settings"
     case logOut = "LogOut"
+    case invalidForm = "Form in not valid, fields should not be empty"
 }
 

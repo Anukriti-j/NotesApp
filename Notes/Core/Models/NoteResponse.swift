@@ -1,6 +1,6 @@
 import Foundation
 
-struct PostResponse: Codable, Identifiable {
+struct NoteResponse: Codable, Identifiable, Equatable {
     let userID, id: Int
     let title, body: String
 

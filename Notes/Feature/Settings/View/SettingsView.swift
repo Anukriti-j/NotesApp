@@ -4,18 +4,21 @@ struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     
     var body: some View {
-        VStack {
-            Form {
-                Button {
-                    viewModel.logout()
-                } label: {
-                    Text(StringConstants.logOut.rawValue)
+        NavigationStack {
+            VStack {
+                Form {
+                    Button {
+                        viewModel.logout()
+                    } label: {
+                        Text(StringConstants.logOut.rawValue)
+                    }
+                    .foregroundStyle(.red)
                 }
-                .foregroundStyle(.red)
             }
+            .navigationTitle(StringConstants.settings.rawValue)
+            .navigationBarTitleDisplayMode(.inline)
         }
-        .navigationTitle(StringConstants.settings.rawValue)
-        .navigationBarTitleDisplayMode(.inline)
+        
     }
 }
 

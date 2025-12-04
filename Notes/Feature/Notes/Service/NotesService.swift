@@ -1,7 +1,7 @@
 import Foundation
 
 protocol NotesService {
-    func fetchPosts() async throws -> [PostResponse]
+    func fetchPosts() async throws -> [NoteResponse]
 }
 
 final class NotesServiceImplementation: NotesService {
@@ -11,11 +11,11 @@ final class NotesServiceImplementation: NotesService {
         self.apiClient = apiClient
     }
     
-    func fetchPosts() async throws -> [PostResponse] {
+    func fetchPosts() async throws -> [NoteResponse] {
         let endpoint = Endpoint(
             path: APIConstants.baseURL.rawValue,
             method: .GET
         )
-        return try await apiClient.request(endpoint: endpoint, response: [PostResponse].self)
+        return try await apiClient.request(endpoint: endpoint, response: [NoteResponse].self)
     }
 }

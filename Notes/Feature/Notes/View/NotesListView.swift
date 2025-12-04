@@ -9,13 +9,47 @@ struct NotesListView: View {
     }
     
     var body: some View {
-        
-        List {
-            ForEach(viewModel.notes) { note in
-                Text(note.title)
+        NavigationStack {
+            VStack {
+                if viewModel.isLoadingData {
+                    Spacer()
+                    ProgressView()
+                }
+                List {
+                    ForEach(viewModel.visibleNotes) { note in
+                        NoteCardView(note: note)
+                            .onAppear {
+                                if note == viewModel.visibleNotes.last {
+                                    Task {
+                                        await viewModel.loadNextPage()
+                                    }
+                                }
+                            }
+                        
+                        if viewModel.isLoadingNextPage {
+                            ProgressView()
+                        }
+                    }
+                    .onDelete { _ in
+                        viewModel.deleteNote()
+                    }
+                }
+                .refreshable {
+                    await viewModel.fetchNotesFromAPI()
+                }
+                .searchable(text: $viewModel.searchText, prompt: "search by title/description")
+            }
+            .navigationTitle("Notes")
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink("Add Note") {
+                        AddNoteView()
+                    }
+
+                }
             }
         }
-        
         .onAppear {
             Task {
                 await viewModel.fetchNotesFromAPI()

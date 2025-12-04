@@ -2,65 +2,115 @@ import Foundation
 
 @MainActor
 final class NotesListViewModel: ObservableObject {
-    @Published var allNotes: [NoteResponse] = []
-    @Published var visibleNotes: [NoteResponse] = []
+    @Published var allNotesFromAPI: [NoteResponse] = []
+    @Published var notesFromCore: [UserAuth] = []
+    @Published var visibleNotes: [UserAuth] = []
     @Published var searchText: String = ""
-    
+
     @Published var isLoadingData = false
     @Published var isLoadingNextPage = false
     @Published var errorMessage: String = ""
     @Published var showAlert = false
-    private var dataFetched = false
-    
-    
+
     private var currentPage = 0
     private let pageSize = 10
+    private var initialLoadDone = false
 
     let service: NotesService
-    
+
     init(service: NotesService) {
         self.service = service
-        Task {
-            await loadNextPage()
-        }
     }
-    
+
     func loadNextPage() async {
-        print("fetch next page called")
         isLoadingNextPage = true
-        defer {
-            isLoadingNextPage = false
+        defer { isLoadingNextPage = false }
+
+        if !initialLoadDone {
+            await fetchNotesFromStore()
+            initialLoadDone = true
         }
-        if !dataFetched  {
-            await fetchNotesFromAPI()
-        }
+
         let startIndex = currentPage * pageSize
-        let endIndex = min(startIndex + pageSize, allNotes.count)
+        guard startIndex < notesFromCore.count else { return } // No more pages
 
-        guard startIndex < allNotes.count else { return } // No more items to load
+        let endIndex = min(startIndex + pageSize, notesFromCore.count)
+        let nextBatch = Array(notesFromCore[startIndex..<endIndex])
+        visibleNotes.append(contentsOf: nextBatch)
 
-        let newNotes = Array(allNotes[startIndex..<endIndex])
-        visibleNotes.append(contentsOf: newNotes)
         currentPage += 1
-        print("\(currentPage)")
     }
-    
+
     func fetchNotesFromAPI() async {
         isLoadingData = true
-        defer {
-            isLoadingData = false
-        }
+        defer { isLoadingData = false }
+
         do {
             let data = try await service.fetchPosts()
-            self.allNotes = data
-            dataFetched = true
+            self.allNotesFromAPI = data
+
+            try StorageManager.manager.saveNotes(notes: data)
+
+            notesFromCore = try StorageManager.manager.fetchNotes()
+
+            loadFirstPage()
+
         } catch {
             errorMessage = error.localizedDescription
             showAlert = true
         }
     }
 
-    func deleteNote() {
-        
+    func fetchNotesFromStore() async {
+        do {
+            notesFromCore = try StorageManager.manager.fetchNotes()
+
+            if notesFromCore.isEmpty {
+                await fetchNotesFromAPI()
+                return
+            }
+            loadFirstPage()
+
+        } catch {
+            errorMessage = error.localizedDescription
+            showAlert = true
+        }
+    }
+
+    func deleteNote(id: Int) {
+        do {
+            try StorageManager.manager.deleteNote(id: id)
+        } catch {
+            errorMessage = error.localizedDescription
+            showAlert = true
+        }
+    }
+    
+    func performLocalSearch() {
+        let query = searchText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if query.isEmpty {
+            loadFirstPage()
+            return
+        }
+
+        let filtered = notesFromCore.filter { note in
+            note.title?.lowercased().contains(query) == true ||
+            note.body?.lowercased().contains(query) == true
+        }
+
+        visibleNotes = filtered
+    }
+
+
+    private func loadFirstPage() {
+        visibleNotes.removeAll()
+        currentPage = 0
+
+        let endIndex = min(pageSize, notesFromCore.count)
+        if endIndex > 0 {
+            visibleNotes = Array(notesFromCore[0..<endIndex])
+            currentPage = 1
+        }
     }
 }

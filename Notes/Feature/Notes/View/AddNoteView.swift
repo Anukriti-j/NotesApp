@@ -22,14 +22,14 @@ struct AddNoteView: View {
             HStack {
                 Spacer()
                 Button {
-                    
+                    viewModel.resetNote()
                 } label: {
                     Text("Reset")
                 }
                 Spacer()
                 
                 Button {
-                    
+                    viewModel.saveNote()
                 } label: {
                     Text("Save")
                 }

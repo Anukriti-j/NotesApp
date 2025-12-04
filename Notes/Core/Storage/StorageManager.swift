@@ -24,6 +24,7 @@ final class StorageManager: StorageService {
             user.email = userData.email
             user.password = userData.password
         }
+        try? context.save()
     }
     
     func setUpUserSession(userId: String) {
@@ -53,5 +54,62 @@ final class StorageManager: StorageService {
             throw DatabaseError.userNotFound
         }
     }
-   
+}
+
+extension StorageManager {
+    
+    func saveNotes(notes: [NoteResponse]) throws {
+        for note in notes {
+            let newNote = UserAuth(context: context)
+            newNote.noteId = Int64(note.id)
+            newNote.title = note.title
+            newNote.body = note.body
+            newNote.createdAt = Date()
+        }
+        
+        do {
+            try context.save()
+        } catch {
+            throw DatabaseError.saveError
+        }
+    }
+    
+    func deleteNote(id: Int) throws {
+        let request = UserAuth.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id)
+        do {
+            if let noteToDelete = try context.fetch(request).first {
+                context.delete(noteToDelete)
+            }
+            try context.save()
+        }
+        catch {
+            throw DatabaseError.deletionError
+        }
+    }
+    
+    func fetchNotes() throws -> [UserAuth] {
+        let request = UserAuth.fetchRequest()
+        
+        do {
+            return try context.fetch(request)
+        } catch {
+            throw DatabaseError.fetchError
+        }
+    }
+    
+    func addOrUpdateNote(note: NoteResponse) throws {
+        let newNote = UserAuth(context: context)
+        newNote.noteId = Int64(note.id)
+        newNote.title = note.title
+        newNote.body = note.body
+        newNote.createdAt = Date()
+        
+        do {
+            try context.save()
+        } catch {
+            throw DatabaseError.saveError
+        }
+    }
+    
 }

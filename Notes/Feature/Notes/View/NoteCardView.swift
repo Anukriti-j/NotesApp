@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct NoteCardView: View {
-    let note: NoteResponse
-    
+    let note: UserAuth
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(note.title)
+            Text(note.title ?? "")
                 .font(.headline)
             
-            Text(note.body)
+            Text(note.body ?? "")
                 .font(.caption)
                 .lineLimit(2)
             
@@ -26,6 +26,6 @@ struct NoteCardView: View {
     }
 }
 
-#Preview {
-    NoteCardView(note: NoteResponse(userID: 1, id: 1, title: "test", body: "Test body"))
-}
+//#Preview {
+//    NoteCardView(note: Note())
+//}

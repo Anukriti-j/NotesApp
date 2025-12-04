@@ -10,5 +10,9 @@ enum StringConstants: String {
     case settings = "Settings"
     case logOut = "LogOut"
     case invalidForm = "Form in not valid, fields should not be empty"
+    case deletionError = "Cannot delete Note"
+    case saveError = "Cannot save note"
+    case fetchError = "Cannot fetch notes"
+    case success = "Success"
 }
 

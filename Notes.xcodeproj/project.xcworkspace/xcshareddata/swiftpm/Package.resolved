@@ -1,0 +1,15 @@
+{
+  "originHash" : "ad2ff721d7b2791fa057eca76cc46a6741b82fe07c87fe2afb8cdd669b1cc123",
+  "pins" : [
+    {
+      "identity" : "mynetworkingkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Anukriti-j/MyNetworkingKit",
+      "state" : {
+        "revision" : "9966d3e9d66cbb0e3c760b0c3d34f7a15449275b",
+        "version" : "1.0.3"
+      }
+    }
+  ],
+  "version" : 3
+}

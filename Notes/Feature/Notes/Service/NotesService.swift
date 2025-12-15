@@ -1,4 +1,5 @@
 import Foundation
+import MyNetworkingKit
 
 protocol NotesService {
     func fetchPosts() async throws -> [NoteResponse]
@@ -7,15 +8,13 @@ protocol NotesService {
 final class NotesServiceImplementation: NotesService {
     let apiClient: APIService
     
-    init(apiClient: APIService) {
+    init(apiClient: APIService = APIClient()) {
         self.apiClient = apiClient
     }
     
     func fetchPosts() async throws -> [NoteResponse] {
-        let endpoint = Endpoint(
-            path: APIConstants.baseURL.rawValue,
-            method: .GET
-        )
-        return try await apiClient.request(endpoint: endpoint, response: [NoteResponse].self)
+        return try await apiClient.request(endpoint: APIConstants.baseURL.rawValue, response: [NoteResponse].self)
     }
 }
+
+

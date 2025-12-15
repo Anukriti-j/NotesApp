@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NoteCardView: View {
-    let note: UserAuth
+    let note: Note
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -12,8 +12,12 @@ struct NoteCardView: View {
                 .font(.caption)
                 .lineLimit(2)
             
-            //TODO: handle timestamp
-            Text("updated timestamp")
+            Text("Created at: \(note.createdAt ?? .now)")
+                .font(.caption2)
+                .fontWeight(.bold)
+                .foregroundStyle(.secondary)
+            
+            Text("Updated at: \(note.updatedAt ?? .now)")
                 .font(.caption2)
                 .fontWeight(.bold)
                 .foregroundStyle(.secondary)
@@ -26,6 +30,6 @@ struct NoteCardView: View {
     }
 }
 
-//#Preview {
-//    NoteCardView(note: Note())
-//}
+#Preview {
+    NoteCardView(note: Note())
+}

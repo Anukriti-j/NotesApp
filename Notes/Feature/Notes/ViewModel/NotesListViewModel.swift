@@ -3,8 +3,8 @@ import Foundation
 @MainActor
 final class NotesListViewModel: ObservableObject {
     @Published var allNotesFromAPI: [NoteResponse] = []
-    @Published var notesFromCore: [UserAuth] = []
-    @Published var visibleNotes: [UserAuth] = []
+    @Published var notesFromCore: [Note] = []
+    @Published var visibleNotes: [Note] = []
     @Published var searchText: String = ""
 
     @Published var isLoadingData = false
@@ -47,8 +47,9 @@ final class NotesListViewModel: ObservableObject {
 
         do {
             let data = try await service.fetchPosts()
+            print(data)
             self.allNotesFromAPI = data
-
+            
             try StorageManager.manager.saveNotes(notes: data)
 
             notesFromCore = try StorageManager.manager.fetchNotes()
@@ -56,6 +57,7 @@ final class NotesListViewModel: ObservableObject {
             loadFirstPage()
 
         } catch {
+            print("API Fetch Error: \(error)")
             errorMessage = error.localizedDescription
             showAlert = true
         }
@@ -66,6 +68,7 @@ final class NotesListViewModel: ObservableObject {
             notesFromCore = try StorageManager.manager.fetchNotes()
 
             if notesFromCore.isEmpty {
+                guard !isLoadingData else { return }
                 await fetchNotesFromAPI()
                 return
             }
@@ -87,23 +90,22 @@ final class NotesListViewModel: ObservableObject {
     }
     
     func performLocalSearch() {
-        let query = searchText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        let query = searchText
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
 
         if query.isEmpty {
-            loadFirstPage()
+            visibleNotes = notesFromCore   
             return
         }
 
-        let filtered = notesFromCore.filter { note in
-            note.title?.lowercased().contains(query) == true ||
-            note.body?.lowercased().contains(query) == true
+        visibleNotes = notesFromCore.filter { note in
+            (note.title?.localizedCaseInsensitiveContains(query) ?? false) ||
+            (note.body?.localizedCaseInsensitiveContains(query) ?? false)
         }
-
-        visibleNotes = filtered
     }
 
-
-    private func loadFirstPage() {
+    func loadFirstPage() {
         visibleNotes.removeAll()
         currentPage = 0
 

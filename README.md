@@ -17,7 +17,7 @@ NotesApp is a simple and user-friendly **iOS Notes Application** built using **S
 ## 🧰 Tech Stack
 
 - **Language:** Swift  
-- **Framework:** UIKit  
+- **Framework:** SwiftUI 
 - **IDE:** Xcode  
 - **Platform:** iOS  
 

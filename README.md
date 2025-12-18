@@ -131,6 +131,7 @@ open Notes.xcodeproj
 
 * Select an iOS Simulator (e.g., iPhone 15 Pro)
 * Press **Cmd + R**
+* Use Credentials: email: anukriti.jain@gmail.com, password: A@12345
 
 ---
 

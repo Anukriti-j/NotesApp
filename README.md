@@ -6,9 +6,6 @@
 ![Architecture](https://img.shields.io/badge/Architecture-MVVM-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
 
-swift-tools-version: 6.1
-The swift-tools-version declares the minimum version of Swift required to build this package.
-
 A modern, **offline-first iOS application** built with **SwiftUI** and **Core Data**.  
 This app demonstrates key mobile development concepts such as **networking, local persistence, pagination, and clean MVVM architecture**.
 
@@ -83,6 +80,9 @@ The app follows the **Model–View–ViewModel (MVVM)** architecture for a clean
   - Response decoding
   - Error handling
 - Promotes modular and reusable networking code
+
+- swift-tools-version: 6.1
+The swift-tools-version declares the minimum version of Swift required to build this package.
 
 ---
 
